@@ -341,10 +341,10 @@ Comprehensive assistance to street children in Ethiopia through education, provi
 5. **📚 Education Priority**: Business activities complement, don't replace education
 
 ## 📞 Contact Information
-- **📧 Email:** fundacjabarkot@gmail.com
-- **📞 Phone:** +48 506 300 585
-- **🏠 Address:** ul. Brodzińskiego 4, 41-800 Zabrze, Poland
-- **📱 Social Media:** Facebook, YouTube
+- **🌐 Foundation Website:** [barkot.pl](https://barkot.pl)
+- **� Project Inquiries:** Use GitHub issues for questions about this analysis
+- **🏠 Foundation Location:** Zabrze, Poland (Operations in Awassa, Ethiopia)
+- **📱 Social Media:** Available through foundation website
 
 ---
 

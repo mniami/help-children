@@ -1,0 +1,66 @@
+title: "Barkot Foundation Analysis & Project Documentation"
+description: "Comprehensive strategies to support street children in Ethiopia 🇪🇹"
+baseurl: ""
+url: "https://dszczepek.github.io"
+
+# GitHub Pages settings
+repository: "dszczepek/slums"
+github_username: dszczepek
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Jekyll settings
+permalink: pretty
+timezone: Europe/Warsaw
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# SEO settings
+author:
+  name: "Slums Project Team"
+  email: "contact@slumsproject.org"
+
+# Social media
+social:
+  - platform: github
+    user_url: "https://github.com/dszczepek/slums"
+
+# Exclude from processing
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - README.md
+
+# Collections
+collections:
+  documents:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "documents"
+    values:
+      layout: "document"
