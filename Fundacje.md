@@ -1,0 +1,3 @@
+- Polska Fundacja dla Afryki - https://pomocafryce.org/
+- Barkot
+- https://namana.pl/pages/wspieramy - sklep bardziej który część środków przeznacza na pomoc
