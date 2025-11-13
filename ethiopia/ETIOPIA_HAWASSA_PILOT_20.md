@@ -84,3 +84,46 @@ Kluczowe wskaźniki mini-pilota:
 - ≥5 dzieci korzysta z daycare przez ≥80% dni.
 - Każda cook po 2 tygodniach ma ≥5 płacących klientów tygodniowo.
 - Niewpłacone składki daycare <10% dni.
+
+## 10) Przeliczenie budżetu 10 000 PLN → ETB → skala wsparcia
+
+Aktualny kurs referencyjny (podany):
+
+- **1 ETB ≈ 0,023 PLN → 1 PLN ≈ 42,7 ETB**
+
+### Kwota w ETB
+
+- **10 000 PLN × 42,7 ETB ≈ 427 000 ETB**
+
+### Konserwatywny koszt jednego mini-pilota (5 matek + 1 opiekunka, ~3 mies.)
+
+Szacunek z marginesem bezpieczeństwa:
+
+- Sprzęt (maty, naczynia, jiko, wiadro, itp.): ~12 000 ETB  
+- Startowy kapitał na jedzenie/paliwo (pierwszy miesiąc): ~10 000 ETB  
+- Wsparcie wynagrodzenia opiekunki (3 mies., częściowo pokrywane składkami): ~6 000 ETB  
+- Druk, materiały, drobne koszty organizacyjne, bufor: ~7 000 ETB  
+- **RAZEM: ~35 000 ETB na jedną grupę**
+
+### Ile grup można sfinansować z 427 000 ETB
+
+\[
+	ext{liczba grup} \approx 427 000 / 35 000 \approx 12{,}2
+\]
+
+Zachowawczo przyjmujemy bufor na inflację i błędy:
+
+- **Bezpiecznie: 10–11 grup po 5 matek**  
+- Realistycznie: zostaje część budżetu na:
+	- nieprzewidziane koszty,
+	- proste szkolenia follow-up,
+	- wsparcie wejścia w „krok 2” (np. mitumba/kiosk) dla najlepszych kobiet.
+
+### Przełożenie na ludzi (przy 10 grupach)
+
+- **10 grup × 5 matek = 50 matek pracujących**,  
+- **+ 10 opiekunek daycare**,  
+- **+ ok. 60–80 dzieci** objętych codzienną opieką w czasie pracy matek.
+
+Taką liczbą można się posługiwać w komunikacji z darczyńcami/partnerami:  
+„10 000 zł pozwala uruchomić ok. 10 kooperacyjnych grup matek (50 matek, 10 opiekunek, 60–80 dzieci w Hawassa) w modelu Fasting lunch + childcare, z planem przejścia najlepszych kobiet do bardziej dochodowych biznesów po 6–12 miesiącach.”
