@@ -32,13 +32,17 @@ In resource-constrained environments (slums, rural areas, developing countries):
 ### 1. 🏥 Health Assistant
 **Medical triage and first-contact health guidance**
 
-- Voice-based medical interview
+- **Voice-based medical interview** (Amharic አማርኛ + English)
+- **Speech-to-Text** support (Whisper)
+- **Text-to-Speech** support (Piper Amharic voice)
 - Symptom analysis and assessment
 - Life-saving action recommendations
 - Disease identification (malaria, cholera, dehydration)
 - WHO protocol compliance
 
 **Try it**: [Live Demo](https://mniami.github.io/help-children/ai4se/demo/) *(requires Chrome 113+ with WebGPU)*
+
+**Amharic Support**: See [AMHARIC_LANGUAGE_SUPPORT.md](docs/AMHARIC_LANGUAGE_SUPPORT.md) for complete voice integration guide
 
 ### 2. 🔧 Technical Repair Assistant
 **Visual AI for equipment repair**
@@ -215,6 +219,7 @@ ai4se/
 
 - **[Project Overview](AI4SE_PROJECT.md)** - Vision, use cases, roadmap
 - **[Implementation Guide](docs/IMPLEMENTATION_GUIDE.md)** - Technical setup
+- **[Amharic Language Support](docs/AMHARIC_LANGUAGE_SUPPORT.md)** - Complete guide for Amharic STT/TTS
 - **[Model Training Guide](docs/TRAINING.md)** - Fine-tuning instructions *(coming soon)*
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Production deployment *(coming soon)*
 - **[API Reference](docs/API.md)** - JavaScript API docs *(coming soon)*
