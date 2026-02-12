@@ -1,0 +1,37 @@
+{
+  "name": "ai4se",
+  "version": "0.1.0",
+  "description": "AI for Social Empowerment - Local-First AI for resource-constrained environments",
+  "main": "demo/index.html",
+  "scripts": {
+    "dev": "serve demo",
+    "build": "echo 'No build step required for demo'",
+    "lint": "eslint demo/**/*.js",
+    "format": "prettier --write demo/**/*.{js,html,css}",
+    "download-model": "echo 'Models will be downloaded when you load the demo'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mniami/help-children.git"
+  },
+  "keywords": [
+    "ai",
+    "offline",
+    "local-first",
+    "healthcare",
+    "social-good",
+    "webllm",
+    "llama",
+    "small-language-models"
+  ],
+  "author": "Help Children Initiative",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.0"
+  },
+  "dependencies": {
+    "@mlc-ai/web-llm": "^0.2.0"
+  }
+}
