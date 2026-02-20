@@ -115,6 +115,13 @@ ai4se/
    - "I have chest pain and shortness of breath"
    - "What should I do for a burn?"
 
+### Kimi K2 (Cloud) Option
+
+- Pick "Kimi K2 (Cloud)" in the demo dropdown and enter your Kimi API key (OpenAI-compatible endpoint at `https://api.moonshot.cn/v1`).
+- Pros: stronger reasoning, 256K context window, no local model download.
+- Cons: requires internet + API key, data sent to provider (not offline), possible latency/cost/CORS limits.
+- Offline Llama/Phi WebLLM models remain available when internet access is limited.
+
 ## 🛠️ For Developers
 
 ### Prerequisites

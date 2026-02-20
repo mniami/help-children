@@ -89,6 +89,15 @@
             background: white;
         }
 
+        .api-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
         .load-btn {
             background: #2E7D32;
             color: white;
@@ -299,13 +308,20 @@
             <!-- Model Info Section -->
             <div class="model-info">
                 <h3>🤖 Local AI Model</h3>
-                <p style="margin-bottom: 15px;">This demo uses WebLLM to run AI models directly in your browser. No data is sent to servers - everything runs locally on your device.</p>
+                <p style="margin-bottom: 15px;">You can try Kimi K2 via its cloud API or run offline WebLLM models directly in your browser. Offline models keep all data on your device.</p>
 
                 <select class="model-select" id="modelSelect">
-                    <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B (Recommended) - ~1.9 GB</option>
+                    <option value="kimi-k2" selected>Kimi K2 (Cloud, 256K context) - API key required</option>
+                    <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B (Offline Recommended) - ~1.9 GB</option>
                     <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3 Mini (Faster) - ~2.3 GB</option>
                     <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B (Lighter) - ~0.6 GB</option>
                 </select>
+
+                <div id="kimiConfig" style="display: block; margin-bottom: 10px;">
+                    <label for="kimiApiKey" style="display: block; font-weight: 600; color: #2E7D32; margin-bottom: 6px;">Kimi API Key (kept in-browser only)</label>
+                    <input type="password" id="kimiApiKey" class="api-input" placeholder="Enter your Kimi API key">
+                    <p style="font-size: 12px; color: #666; margin-top: 6px;">Uses online Kimi K2 endpoint. Data is sent to the provider; requires internet access.</p>
+                </div>
 
                 <button class="load-btn" id="loadBtn">Load Model</button>
 
@@ -393,9 +409,15 @@
         import * as webllm from "https://esm.run/@mlc-ai/web-llm";
 
         let engine = null;
+        let engineMode = "webllm";
+        let kimiApiKey = "";
         let conversationHistory = [];
         let totalTokens = 0;
         let totalQueries = 0;
+        const modelSelect = document.getElementById('modelSelect');
+        const kimiConfig = document.getElementById('kimiConfig');
+        const KIMI_API_URL = "https://api.moonshot.cn/v1/chat/completions";
+        const KIMI_MODEL_ID = "kimi-k2";
 
         const systemPrompt = `You are a medical assistant designed to help with primary health assessment in resource-limited settings. Your role is to:
 
@@ -416,7 +438,6 @@ Remember: You're a first-contact tool, not a replacement for medical professiona
 
         window.loadModel = async function() {
             const loadBtn = document.getElementById('loadBtn');
-            const modelSelect = document.getElementById('modelSelect');
             const progressBar = document.getElementById('progressBar');
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
@@ -426,15 +447,49 @@ Remember: You're a first-contact tool, not a replacement for medical professiona
             const stats = document.getElementById('stats');
 
             const selectedModel = modelSelect.value;
+            const useKimi = selectedModel === 'kimi-k2';
 
             loadBtn.disabled = true;
             modelSelect.disabled = true;
-            progressBar.style.display = 'block';
             progressText.style.display = 'block';
-            status.textContent = '⏳ Loading Model...';
+            progressBar.style.display = useKimi ? 'none' : 'block';
+            status.textContent = useKimi ? '⏳ Connecting to Kimi K2...' : '⏳ Loading Model...';
             status.className = 'status loading';
 
+            if (useKimi) {
+                const providedKey = document.getElementById('kimiApiKey').value.trim();
+
+                if (!providedKey) {
+                    alert('Please enter a Kimi API key to use this model.');
+                    loadBtn.disabled = false;
+                    modelSelect.disabled = false;
+                    status.textContent = '⚠️ Model Not Loaded';
+                    status.className = 'status offline';
+                    progressText.textContent = 'Kimi K2 requires an API key.';
+                    return;
+                }
+
+                kimiApiKey = providedKey;
+                engine = null;
+                engineMode = 'kimi-api';
+                conversationHistory = [{
+                    role: "system",
+                    content: systemPrompt
+                }];
+
+                status.textContent = '🟢 Kimi K2 API Ready';
+                status.className = 'status online';
+                progressText.textContent = 'Using Kimi K2 via cloud API (online)';
+                chatContainer.style.display = 'block';
+                inputArea.style.display = 'block';
+                stats.style.display = 'grid';
+                loadBtn.disabled = false;
+                modelSelect.disabled = false;
+                return;
+            }
+
             try {
+                engineMode = 'webllm';
                 engine = await webllm.CreateMLCEngine(selectedModel, {
                     initProgressCallback: (progress) => {
                         const percentage = Math.round(progress.progress * 100);
@@ -470,7 +525,9 @@ Remember: You're a first-contact tool, not a replacement for medical professiona
         };
 
         window.sendMessage = async function() {
-            if (!engine) {
+            const usingKimi = engineMode === 'kimi-api';
+
+            if (!engine && !usingKimi) {
                 alert('Please load the model first!');
                 return;
             }
@@ -506,22 +563,52 @@ Remember: You're a first-contact tool, not a replacement for medical professiona
                 let fullResponse = '';
                 let tokenCount = 0;
 
-                // Stream the response
-                const chunks = await engine.chat.completions.create({
-                    messages: conversationHistory,
-                    stream: true,
-                    max_tokens: 512,
-                    temperature: 0.7
-                });
+                if (usingKimi) {
+                    const response = await fetch(KIMI_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${kimiApiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: KIMI_MODEL_ID,
+                            messages: conversationHistory,
+                            stream: false,
+                            max_tokens: 512,
+                            temperature: 0.7
+                        })
+                    });
 
-                assistantMsgDiv.textContent = '';
+                    if (!response.ok) {
+                        throw new Error(`Kimi API error: ${response.status} ${response.statusText}`);
+                    }
 
-                for await (const chunk of chunks) {
-                    const content = chunk.choices[0]?.delta?.content || "";
-                    fullResponse += content;
-                    assistantMsgDiv.textContent = fullResponse;
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                    tokenCount++;
+                    const data = await response.json();
+                    fullResponse = data?.choices?.[0]?.message?.content?.trim() || '';
+                    tokenCount = data?.usage?.total_tokens || data?.usage?.completion_tokens || (fullResponse ? fullResponse.split(/\s+/).length : 0);
+                    assistantMsgDiv.textContent = fullResponse || 'No response from Kimi API';
+                } else {
+                    // Stream the response
+                    const chunks = await engine.chat.completions.create({
+                        messages: conversationHistory,
+                        stream: true,
+                        max_tokens: 512,
+                        temperature: 0.7
+                    });
+
+                    assistantMsgDiv.textContent = '';
+
+                    for await (const chunk of chunks) {
+                        const content = chunk.choices[0]?.delta?.content || "";
+                        fullResponse += content;
+                        assistantMsgDiv.textContent = fullResponse;
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        tokenCount++;
+                    }
+                }
+
+                if (usingKimi && !fullResponse) {
+                    fullResponse = 'No response from Kimi API';
                 }
 
                 // Add to conversation history
@@ -533,7 +620,7 @@ Remember: You're a first-contact tool, not a replacement for medical professiona
                 // Update statistics
                 const endTime = Date.now();
                 const duration = (endTime - startTime) / 1000;
-                const tokensPerSecond = Math.round(tokenCount / duration);
+                const tokensPerSecond = duration > 0 ? Math.round(tokenCount / duration) : 0;
 
                 totalTokens += tokenCount;
                 totalQueries++;
@@ -564,6 +651,11 @@ Remember: You're a first-contact tool, not a replacement for medical professiona
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
+
+        modelSelect.addEventListener('change', () => {
+            const useKimi = modelSelect.value === 'kimi-k2';
+            kimiConfig.style.display = useKimi ? 'block' : 'none';
+        });
 
         // Initialize
         document.getElementById('loadBtn').addEventListener('click', loadModel);
