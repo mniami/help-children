@@ -99,25 +99,6 @@
             background: #1a1a2e;
         }
 
-        .api-key-area {
-            display: none;
-            margin-bottom: 14px;
-        }
-
-        .api-key-area input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            font-size: 15px;
-            background: rgba(0,0,0,0.3);
-            color: white;
-        }
-
-        .api-key-area input::placeholder {
-            color: rgba(255,255,255,0.4);
-        }
-
         .big-btn {
             width: 100%;
             padding: 16px;
@@ -555,21 +536,11 @@
     <div class="model-card">
         <h3>🤖 Choose AI Model</h3>
 
-        <select class="model-select" id="modelSelect" onchange="onModelChange()">
-            <optgroup label="📴 Offline (Downloaded to device)">
-                <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B — Best quality (~1.9 GB)</option>
-                <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B — Faster / smaller (~0.6 GB)</option>
-                <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3 Mini — Alternative (~2.3 GB)</option>
-            </optgroup>
-            <optgroup label="☁️ Cloud (needs internet, no download)">
-                <option value="cloud-kimi">Kimi K2 (Moonshot) — Free tier available</option>
-            </optgroup>
+        <select class="model-select" id="modelSelect">
+            <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B — Best quality (~1.9 GB)</option>
+            <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B — Faster / smaller (~0.6 GB)</option>
+            <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3 Mini — Alternative (~2.3 GB)</option>
         </select>
-
-        <!-- API key for cloud model -->
-        <div class="api-key-area" id="apiKeyArea">
-            <input type="password" id="apiKeyInput" placeholder="Enter Kimi / Moonshot API key…">
-        </div>
 
         <button class="big-btn btn-green" id="loadBtn" onclick="loadModel()">
             ▶ Start
@@ -679,8 +650,6 @@ const MAX_RESPONSE_TOKENS = 300;
 
 /* ── State ─────────────────────────────────────────── */
 let engine       = null;
-let isCloud      = false;
-let cloudApiKey  = '';
 let lang         = 'en-US';
 let topic        = 'general';
 let userNum      = 1;
@@ -804,12 +773,6 @@ window.selectLang = function(btn) {
 };
 
 /* ── Model loading ───────────────────────────────────── */
-window.onModelChange = function() {
-    const sel = document.getElementById('modelSelect').value;
-    document.getElementById('apiKeyArea').style.display =
-        sel.startsWith('cloud') ? 'block' : 'none';
-};
-
 window.loadModel = async function() {
     const sel   = document.getElementById('modelSelect').value;
     const btn   = document.getElementById('loadBtn');
@@ -818,20 +781,6 @@ window.loadModel = async function() {
     const lbl   = document.getElementById('progressLabel');
 
     btn.disabled = true;
-    isCloud = sel.startsWith('cloud');
-
-    if (isCloud) {
-        cloudApiKey = document.getElementById('apiKeyInput').value.trim();
-        if (!cloudApiKey) {
-            lbl.textContent = '⚠️ Please enter your API key.';
-            wrap.style.display = 'block';
-            btn.disabled = false;
-            return;
-        }
-        // For cloud, no download needed — jump straight to topic screen
-        initUI();
-        return;
-    }
 
     // Offline WebLLM
     wrap.style.display = 'block';
@@ -937,12 +886,7 @@ async function onUserSpeech(text) {
     history.push({ role: 'user', content: text });
 
     try {
-        let response;
-        if (isCloud) {
-            response = await cloudChat(history, PROMPTS[topic]);
-        } else {
-            response = await localChat(history, PROMPTS[topic]);
-        }
+        const response = await localChat(history, PROMPTS[topic]);
 
         lastAiText = response;
         history.push({ role: 'assistant', content: response });
@@ -973,35 +917,6 @@ async function localChat(msgs, systemPrompt) {
         full += chunk.choices[0]?.delta?.content || '';
     }
     return full.trim();
-}
-
-/* ── Cloud inference (Kimi K2 / OpenAI-compatible) ───── */
-async function cloudChat(msgs, systemPrompt) {
-    const messages = [{ role: 'system', content: systemPrompt }, ...msgs];
-    const res = await fetch('https://api.moonshot.cn/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + cloudApiKey,
-        },
-        body: JSON.stringify({
-            model: 'kimi-k2-0711-preview',
-            messages,
-            max_tokens: MAX_RESPONSE_TOKENS,
-            temperature: 0.7,
-        }),
-    });
-    if (!res.ok) {
-        let detail = '';
-        try { const e = await res.json(); detail = e.error?.message || ''; } catch (_) {}
-        throw new Error(
-            res.status === 401 ? 'Invalid API key — please check your key and try again.' :
-            res.status === 429 ? 'Rate limit reached — please wait a moment and try again.' :
-            `Cloud API error ${res.status}${detail ? ': ' + detail : ''}`
-        );
-    }
-    const data = await res.json();
-    return data.choices[0].message.content.trim();
 }
 
 /* ── Repeat / Clear ──────────────────────────────────── */
