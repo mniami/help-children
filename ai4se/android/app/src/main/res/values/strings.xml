@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AI University</string>
+    <string name="subtitle">Offline Voice Assistant</string>
+
+    <!-- Setup screen -->
+    <string name="model_file_label">📂 AI Model File</string>
+    <string name="model_path_hint">Path to .task model file on device</string>
+    <string name="start">▶  Start</string>
+    <string name="offline_note">🔒 Runs entirely on this device — no internet needed after setup.</string>
+
+    <!-- Topics screen -->
+    <string name="new_user">🔄 New user</string>
+    <string name="what_do_you_need">What do you need?</string>
+    <string name="tap_picture">Tap a picture to begin</string>
+    <string name="settings">⚙️ Settings</string>
+
+    <!-- Voice screen -->
+    <string name="tap_to_speak">Tap to speak</string>
+    <string name="mic_hint">Tap the microphone and ask your question</string>
+    <string name="repeat">🔊 Repeat</string>
+    <string name="clear">🗑️ Clear</string>
+    <string name="topics">📋 Topics</string>
+</resources>
