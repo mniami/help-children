@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AI University - Voice Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* ── SCREENS ── */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ── SETUP SCREEN ── */
+        #setupScreen {
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .app-logo {
+            font-size: 72px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e0e0ff;
+            margin-bottom: 6px;
+        }
+
+        .app-subtitle {
+            font-size: 16px;
+            color: #9090bb;
+            margin-bottom: 30px;
+        }
+
+        .model-card {
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .model-card h3 {
+            color: #aad4ff;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .model-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            font-size: 15px;
+            margin-bottom: 14px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        .model-select option {
+            background: #1a1a2e;
+        }
+
+        .big-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .big-btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #1565C0, #42A5F5);
+            color: white;
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, #E65100, #FF9800);
+            color: white;
+        }
+
+        .btn-grey {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .big-btn:disabled {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.3);
+            cursor: not-allowed;
+        }
+
+        .progress-wrap {
+            width: 100%;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 14px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 7px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            border-radius: 7px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+        }
+
+        .info-note {
+            font-size: 13px;
+            color: #7090aa;
+            text-align: center;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        /* ── TOPIC SCREEN ── */
+        #topicScreen {
+            justify-content: flex-start;
+            gap: 16px;
+            padding-top: 30px;
+        }
+
+        .topic-header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .topic-header h2 {
+            font-size: 22px;
+            color: #e0e0ff;
+        }
+
+        .topic-header p {
+            font-size: 14px;
+            color: #9090bb;
+            margin-top: 4px;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .topic-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            padding: 10px;
+        }
+
+        .topic-btn:active {
+            transform: scale(0.94);
+        }
+
+        .topic-icon {
+            font-size: 48px;
+            line-height: 1;
+        }
+
+        .topic-label {
+            font-size: 14px;
+            color: white;
+            text-align: center;
+        }
+
+        .topic-health    { background: linear-gradient(135deg, #b71c1c, #ef5350); }
+        .topic-education { background: linear-gradient(135deg, #1565C0, #42A5F5); }
+        .topic-farming   { background: linear-gradient(135deg, #2E7D32, #66BB6A); }
+        .topic-rights    { background: linear-gradient(135deg, #4A148C, #9C27B0); }
+        .topic-emergency { background: linear-gradient(135deg, #E65100, #FF9800); }
+        .topic-general   { background: linear-gradient(135deg, #37474F, #78909C); }
+
+        .user-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 10px 16px;
+        }
+
+        .user-bar span {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .user-bar button {
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        /* ── VOICE SCREEN ── */
+        #voiceScreen {
+            justify-content: space-between;
+            padding-bottom: 30px;
+        }
+
+        .voice-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0 10px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            font-size: 22px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topic-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+        }
+
+        .voice-status-area {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .mic-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-ring {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(76, 175, 80, 0.2);
+            animation: none;
+        }
+
+        .mic-ring.listening {
+            animation: ripple 1.2s ease-out infinite;
+        }
+
+        @keyframes ripple {
+            0%   { transform: scale(1);   opacity: 0.6; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        .mic-btn {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: none;
+            font-size: 52px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .mic-btn.idle {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+        }
+
+        .mic-btn.listening {
+            background: linear-gradient(135deg, #b71c1c, #ef5350);
+            animation: mic-pulse 0.8s ease-in-out infinite alternate;
+        }
+
+        .mic-btn.thinking {
+            background: linear-gradient(135deg, #E65100, #FF9800);
+        }
+
+        .mic-btn.speaking {
+            background: linear-gradient(135deg, #1565C0, #42A5F5);
+        }
+
+        .mic-btn:disabled {
+            background: rgba(255,255,255,0.1);
+            cursor: not-allowed;
+        }
+
+        @keyframes mic-pulse {
+            from { transform: scale(1);    box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+            to   { transform: scale(1.06); box-shadow: 0 12px 48px rgba(239,83,80,0.5); }
+        }
+
+        .status-label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e0e0ff;
+            text-align: center;
+            min-height: 30px;
+        }
+
+        .status-hint {
+            font-size: 14px;
+            color: #9090bb;
+            text-align: center;
+        }
+
+        .transcript-box {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .t-msg {
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.5;
+            max-width: 85%;
+        }
+
+        .t-msg.user {
+            background: rgba(66, 165, 245, 0.2);
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .t-msg.ai {
+            background: rgba(76, 175, 80, 0.2);
+            align-self: flex-start;
+        }
+
+        .t-msg.system {
+            background: rgba(255,255,255,0.05);
+            align-self: center;
+            text-align: center;
+            font-style: italic;
+            font-size: 13px;
+            color: #9090bb;
+            max-width: 100%;
+        }
+
+        .voice-footer {
+            width: 100%;
+            display: flex;
+            gap: 12px;
+        }
+
+        .voice-footer button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .voice-footer button:active {
+            transform: scale(0.96);
+            background: rgba(255,255,255,0.18);
+        }
+
+        /* ── THINKING DOTS ── */
+        .dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #FF9800;
+            margin: 0 3px;
+            animation: bounce 1s infinite;
+        }
+        .dots span:nth-child(2) { animation-delay: 0.15s; }
+        .dots span:nth-child(3) { animation-delay: 0.30s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40%            { transform: translateY(-8px); }
+        }
+
+        /* ── LANGUAGE SELECTOR ── */
+        .lang-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .lang-btn {
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: rgba(76,175,80,0.3);
+            border-color: #4CAF50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 360px) {
+            .topics-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .mic-btn { width: 110px; height: 110px; font-size: 44px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 1 — SETUP (load model)
+════════════════════════════════════════════════════════ -->
+<div class="screen active" id="setupScreen">
+    <div class="app-logo">📚</div>
+    <div class="app-title">AI University</div>
+    <div class="app-subtitle">Offline Voice Assistant</div>
+
+    <!-- Language selection -->
+    <div class="lang-bar" id="langBar">
+        <button class="lang-btn active" data-lang="en-US" onclick="selectLang(this)">🇬🇧 English</button>
+        <button class="lang-btn" data-lang="am-ET" onclick="selectLang(this)">🇪🇹 Amharic</button>
+        <button class="lang-btn" data-lang="sw-KE" onclick="selectLang(this)">🇰🇪 Swahili</button>
+        <button class="lang-btn" data-lang="fr-FR" onclick="selectLang(this)">🇫🇷 Français</button>
+        <button class="lang-btn" data-lang="ar-SA" onclick="selectLang(this)">🇸🇦 Arabic</button>
+    </div>
+
+    <div class="model-card">
+        <h3>🤖 Choose AI Model</h3>
+
+        <select class="model-select" id="modelSelect">
+            <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B — Best quality (~1.9 GB)</option>
+            <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B — Faster / smaller (~0.6 GB)</option>
+            <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3 Mini — Alternative (~2.3 GB)</option>
+        </select>
+
+        <button class="big-btn btn-green" id="loadBtn" onclick="loadModel()">
+            ▶ Start
+        </button>
+
+        <div class="progress-wrap" id="progressWrap">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-label" id="progressLabel">Downloading AI model…</div>
+        </div>
+    </div>
+
+    <p class="info-note">
+        🔒 Offline models run entirely on this device — no data is ever sent to a server.<br>
+        First load downloads the model once; all future uses are instant.
+    </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 2 — TOPIC SELECTION
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="topicScreen">
+    <div class="user-bar">
+        <span id="userLabel">👤 User 1</span>
+        <button onclick="newUser()">🔄 New user</button>
+    </div>
+
+    <div class="topic-header">
+        <h2>What do you need?</h2>
+        <p id="topicSubtitle">Tap a picture to begin</p>
+    </div>
+
+    <div class="topics-grid">
+        <button class="topic-btn topic-health" onclick="startTopic('health')">
+            <span class="topic-icon">🏥</span>
+            <span class="topic-label">Health</span>
+        </button>
+        <button class="topic-btn topic-education" onclick="startTopic('education')">
+            <span class="topic-icon">📖</span>
+            <span class="topic-label">Education</span>
+        </button>
+        <button class="topic-btn topic-farming" onclick="startTopic('farming')">
+            <span class="topic-icon">🌾</span>
+            <span class="topic-label">Farming</span>
+        </button>
+        <button class="topic-btn topic-rights" onclick="startTopic('rights')">
+            <span class="topic-icon">⚖️</span>
+            <span class="topic-label">Rights &amp; Law</span>
+        </button>
+        <button class="topic-btn topic-emergency" onclick="startTopic('emergency')">
+            <span class="topic-icon">🆘</span>
+            <span class="topic-label">Emergency</span>
+        </button>
+        <button class="topic-btn topic-general" onclick="startTopic('general')">
+            <span class="topic-icon">💬</span>
+            <span class="topic-label">Anything</span>
+        </button>
+    </div>
+
+    <button class="big-btn btn-grey" style="margin-top: 10px;" onclick="goToSetup()">
+        ⚙️ Settings
+    </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 3 — VOICE INTERACTION
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="voiceScreen">
+    <div class="voice-header">
+        <button class="back-btn" onclick="goToTopics()">◀</button>
+        <div class="topic-badge" id="topicBadge">🏥 Health</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    <div class="voice-status-area">
+        <!-- Big mic button -->
+        <div class="mic-container">
+            <div class="mic-ring" id="micRing"></div>
+            <button class="mic-btn idle" id="micBtn" onclick="toggleListen()">🎤</button>
+        </div>
+
+        <div class="status-label" id="statusLabel">Tap to speak</div>
+        <div class="status-hint" id="statusHint">Hold button and speak your question</div>
+
+        <!-- Transcript / conversation -->
+        <div class="transcript-box" id="transcriptBox">
+            <div class="t-msg system" id="welcomeMsg">Welcome! Tap the microphone and ask your question.</div>
+        </div>
+    </div>
+
+    <div class="voice-footer">
+        <button onclick="repeatLastResponse()">🔊 Repeat</button>
+        <button onclick="clearConversation()">🗑️ Clear</button>
+        <button onclick="goToTopics()">📋 Topics</button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════ -->
+<script type="module">
+import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+
+/* ── Config ─────────────────────────────────────────── */
+const MAX_RESPONSE_TOKENS = 300;
+
+/* ── State ─────────────────────────────────────────── */
+let engine       = null;
+let lang         = 'en-US';
+let topic        = 'general';
+let userNum      = 1;
+let history      = [];   // [{role,content}, ...]
+let lastAiText   = '';
+let appState     = 'idle'; // idle | listening | thinking | speaking
+
+/* ── Speech ─────────────────────────────────────────── */
+const synth = window.speechSynthesis;
+let recognition  = null;
+
+function initSpeechRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return null;
+    const r = new SR();
+    r.continuous    = false;
+    r.interimResults = false;
+    r.lang          = lang;
+
+    r.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        onUserSpeech(text);
+    };
+    r.onerror = (e) => {
+        console.error('SR error', e.error);
+        if (e.error === 'no-speech') {
+            setMicState('idle');
+        } else {
+            addMessage('system', '⚠️ Microphone error: ' + e.error);
+            setMicState('idle');
+        }
+    };
+    r.onend = () => {
+        if (appState === 'listening') setMicState('idle');
+    };
+    return r;
+}
+
+function speak(text, onDone) {
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang  = lang;
+    utter.rate  = 0.95;
+    utter.onend = onDone || null;
+    synth.speak(utter);
+}
+
+/* ── UI helpers ──────────────────────────────────────── */
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function setMicState(state) {
+    appState = state;
+    const btn  = document.getElementById('micBtn');
+    const ring = document.getElementById('micRing');
+    const lbl  = document.getElementById('statusLabel');
+    const hint = document.getElementById('statusHint');
+
+    btn.className  = 'mic-btn ' + state;
+    ring.className = 'mic-ring' + (state === 'listening' ? ' listening' : '');
+
+    if (state === 'idle') {
+        btn.textContent = '🎤';
+        btn.disabled    = false;
+        lbl.textContent = 'Tap to speak';
+        hint.textContent = 'Tap the microphone and ask your question';
+    } else if (state === 'listening') {
+        btn.textContent = '⏹';
+        btn.disabled    = false;
+        lbl.textContent = 'Listening…';
+        hint.textContent = 'Speak now — tap again to stop';
+    } else if (state === 'thinking') {
+        btn.innerHTML   = '<span class="dots"><span></span><span></span><span></span></span>';
+        btn.disabled    = true;
+        lbl.textContent = 'Thinking…';
+        hint.textContent = 'Please wait';
+    } else if (state === 'speaking') {
+        btn.textContent = '🔊';
+        btn.disabled    = true;
+        lbl.textContent = 'Speaking…';
+        hint.textContent = 'Tap Repeat to hear the answer again';
+    }
+}
+
+function addMessage(role, text) {
+    const box = document.getElementById('transcriptBox');
+    const div = document.createElement('div');
+    div.className = 't-msg ' + (role === 'user' ? 'user' : role === 'ai' ? 'ai' : 'system');
+    div.textContent = (role === 'user' ? '🗣 ' : role === 'ai' ? '🤖 ' : '') + text;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+/* ── System prompts per topic ────────────────────────── */
+const PROMPTS = {
+    health: `You are a village health advisor. You provide general health information and first aid guidance only — you are NOT a doctor and cannot diagnose or prescribe. Always remind users that serious symptoms require a real medical professional. Help describe symptoms, suggest basic first aid, and identify when urgent care is needed. Use simple, kind language.`,
+    education: `You are a friendly teacher. Help people learn to read, count, and understand the world around them. Use very simple explanations and real-life examples. Encourage and motivate the learner.`,
+    farming: `You are an experienced farmer and agricultural advisor. Help with crop growing, soil health, pest control, weather patterns, and livestock care. Give practical advice using local methods and materials.`,
+    rights: `You are a community rights advisor. Explain basic human rights, legal processes, and community resources in very simple terms. Help people understand their rights and how to protect themselves and their families.`,
+    emergency: `You are an emergency response guide. Provide clear, step-by-step instructions for life-threatening situations: injuries, fire, floods, dangerous animals, and other emergencies. Be calm, direct, and concise.`,
+    general: `You are a helpful, knowledgeable friend — like a portable university. Answer any question the user has with patience, clarity, and respect. Use the simplest possible language and helpful examples.`,
+};
+
+const TOPIC_META = {
+    health:    { badge: '🏥 Health',    welcome: 'Hello! Tell me about your health concern.' },
+    education: { badge: '📖 Education', welcome: 'Hello! What would you like to learn today?' },
+    farming:   { badge: '🌾 Farming',   welcome: 'Hello! How can I help with your farm?' },
+    rights:    { badge: '⚖️ Rights',    welcome: 'Hello! Ask me about your rights.' },
+    emergency: { badge: '🆘 Emergency', welcome: 'Hello! Describe the emergency and I will help immediately.' },
+    general:   { badge: '💬 General',   welcome: 'Hello! Ask me anything — I am here to help.' },
+};
+
+/* ── Language ────────────────────────────────────────── */
+window.selectLang = function(btn) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    lang = btn.dataset.lang;
+    recognition = initSpeechRecognition();
+};
+
+/* ── Model loading ───────────────────────────────────── */
+window.loadModel = async function() {
+    const sel   = document.getElementById('modelSelect').value;
+    const btn   = document.getElementById('loadBtn');
+    const wrap  = document.getElementById('progressWrap');
+    const fill  = document.getElementById('progressFill');
+    const lbl   = document.getElementById('progressLabel');
+
+    btn.disabled = true;
+
+    // Offline WebLLM
+    wrap.style.display = 'block';
+    lbl.textContent = 'Downloading AI model — this happens only once…';
+
+    try {
+        engine = await webllm.CreateMLCEngine(sel, {
+            initProgressCallback: (p) => {
+                const pct = Math.round((p.progress || 0) * 100);
+                fill.style.width = pct + '%';
+                lbl.textContent  = p.text || `Downloading… ${pct}%`;
+            }
+        });
+        lbl.textContent = '✅ Model ready!';
+        setTimeout(initUI, 600);
+    } catch (err) {
+        lbl.textContent = '❌ Error: ' + err.message;
+        btn.disabled = false;
+        console.error(err);
+    }
+};
+
+function initUI() {
+    recognition = initSpeechRecognition();
+    showScreen('topicScreen');
+    speak(
+        'Welcome to AI University. Tap a picture to choose your topic.',
+        null
+    );
+}
+
+/* ── Topic selection ─────────────────────────────────── */
+window.startTopic = function(t) {
+    topic   = t;
+    history = [];
+    const meta = TOPIC_META[t];
+
+    // Set badge
+    document.getElementById('topicBadge').textContent = meta.badge;
+
+    // Set welcome message in transcript
+    const box = document.getElementById('transcriptBox');
+    box.innerHTML = '';
+    const welcome = document.getElementById('welcomeMsg') || document.createElement('div');
+    welcome.id        = 'welcomeMsg';
+    welcome.className = 't-msg system';
+    welcome.textContent = meta.welcome;
+    box.appendChild(welcome);
+
+    setMicState('idle');
+    showScreen('voiceScreen');
+
+    // Speak the welcome greeting
+    speak(meta.welcome);
+};
+
+window.goToTopics = function() {
+    synth.cancel();
+    if (recognition) recognition.abort();
+    setMicState('idle');
+    showScreen('topicScreen');
+};
+
+window.goToSetup = function() {
+    synth.cancel();
+    showScreen('setupScreen');
+};
+
+/* ── Multi-user ──────────────────────────────────────── */
+window.newUser = function() {
+    userNum++;
+    document.getElementById('userLabel').textContent = '👤 User ' + userNum;
+    history = [];
+    speak('New user. Hello User ' + userNum + '! Choose a topic.');
+};
+
+/* ── Mic toggle ──────────────────────────────────────── */
+window.toggleListen = function() {
+    if (!recognition) {
+        addMessage('system', '⚠️ Your browser does not support voice input. Please use Chrome or Edge on Android/desktop.');
+        return;
+    }
+    if (appState === 'listening') {
+        recognition.stop();
+        setMicState('idle');
+    } else if (appState === 'idle') {
+        setMicState('listening');
+        try {
+            recognition.lang = lang;
+            recognition.start();
+        } catch (e) {
+            setMicState('idle');
+            console.error(e);
+        }
+    }
+};
+
+/* ── Core: user spoke → AI responds ─────────────────── */
+async function onUserSpeech(text) {
+    setMicState('thinking');
+    addMessage('user', text);
+
+    history.push({ role: 'user', content: text });
+
+    try {
+        const response = await localChat(history, PROMPTS[topic]);
+
+        lastAiText = response;
+        history.push({ role: 'assistant', content: response });
+
+        addMessage('ai', response);
+        setMicState('speaking');
+        speak(response, () => setMicState('idle'));
+    } catch (err) {
+        const msg = 'Sorry, I had an error. Please try again.';
+        addMessage('system', '⚠️ ' + err.message);
+        setMicState('speaking');
+        speak(msg, () => setMicState('idle'));
+        console.error(err);
+    }
+}
+
+/* ── Local WebLLM inference ──────────────────────────── */
+async function localChat(msgs, systemPrompt) {
+    const messages = [{ role: 'system', content: systemPrompt }, ...msgs];
+    let full = '';
+    const stream = await engine.chat.completions.create({
+        messages,
+        stream: true,
+        max_tokens: MAX_RESPONSE_TOKENS,
+        temperature: 0.7,
+    });
+    for await (const chunk of stream) {
+        full += chunk.choices[0]?.delta?.content || '';
+    }
+    return full.trim();
+}
+
+/* ── Repeat / Clear ──────────────────────────────────── */
+window.repeatLastResponse = function() {
+    if (lastAiText) {
+        setMicState('speaking');
+        speak(lastAiText, () => setMicState('idle'));
+    } else {
+        speak('Nothing to repeat yet.');
+    }
+};
+
+window.clearConversation = function() {
+    history = [];
+    lastAiText = '';
+    const box = document.getElementById('transcriptBox');
+    box.innerHTML = '<div class="t-msg system">Conversation cleared. Tap the microphone to start again.</div>';
+    speak('Conversation cleared.');
+};
+
+/* ── Init ───────────────────────────────────────────── */
+recognition = initSpeechRecognition();
+</script>
+</body>
+</html>
