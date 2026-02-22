@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI4SE Health Assistant - Offline Demo</title>
+    <title>Amharic Voice Assistant - Offline Demo</title>
     <style>
         * {
             margin: 0;
@@ -290,8 +290,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏥 AI4SE Health Assistant</h1>
-            <p>Offline AI-Powered Medical Triage</p>
+            <h1>💬 Amharic Voice Assistant</h1>
+            <p>Offline AI-Powered General Assistant</p>
             <span class="status offline" id="status">⚠️ Model Not Loaded</span>
         </div>
 
@@ -328,7 +328,7 @@
             <!-- Chat Container -->
             <div class="chat-container" id="chatContainer">
                 <div class="message system">
-                    Welcome! I'm your offline medical assistant. I can help with initial health assessments, but I'm not a replacement for professional medical care. In emergencies, always seek immediate medical attention.
+                    ሰላም! (Hello!) I'm your offline Amharic assistant. I can help with general conversations, translations, questions, and more. All processing happens on your device - no internet needed!
                 </div>
             </div>
 
@@ -339,7 +339,7 @@
                         type="text"
                         class="message-input"
                         id="messageInput"
-                        placeholder="Describe the symptoms..."
+                        placeholder="Ask me anything in Amharic or English..."
                         onkeypress="if(event.key === 'Enter') sendMessage()"
                     >
                     <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
@@ -347,17 +347,17 @@
 
                 <div class="examples">
                     <h4>💡 Example Questions:</h4>
-                    <button class="example-btn" onclick="setExample('My child has fever and diarrhea for 3 days')">
-                        Fever & Diarrhea
+                    <button class="example-btn" onclick="setExample('ሰላም! እንዴት ነህ?')">
+                        Hello in Amharic
                     </button>
-                    <button class="example-btn" onclick="setExample('I have a persistent cough and chest pain')">
-                        Cough & Chest Pain
+                    <button class="example-btn" onclick="setExample('Translate \"Good morning\" to Amharic')">
+                        Translation
                     </button>
-                    <button class="example-btn" onclick="setExample('My baby is not eating and seems lethargic')">
-                        Baby Not Eating
+                    <button class="example-btn" onclick="setExample('What is the capital of Ethiopia?')">
+                        General Knowledge
                     </button>
-                    <button class="example-btn" onclick="setExample('I have a severe headache with sensitivity to light')">
-                        Severe Headache
+                    <button class="example-btn" onclick="setExample('Tell me about Ethiopian coffee ceremony')">
+                        Ethiopian Culture
                     </button>
                 </div>
             </div>
@@ -397,22 +397,22 @@
         let totalTokens = 0;
         let totalQueries = 0;
 
-        const systemPrompt = `You are a medical assistant designed to help with primary health assessment in resource-limited settings. Your role is to:
+        const systemPrompt = `You are a helpful AI assistant for Amharic speakers. Your role is to:
 
-1. Ask relevant questions about symptoms
-2. Provide initial assessment and guidance
-3. Suggest immediate actions that can be taken at home
-4. Identify when professional medical care is urgently needed
-5. Be culturally sensitive and use simple, clear language
+1. Answer questions clearly and accurately in Amharic or English
+2. Help with translations between Amharic (አማርኛ) and English
+3. Provide educational support and explanations
+4. Share information about Ethiopian culture, history, and general knowledge
+5. Be culturally sensitive and respectful
 
-Important guidelines:
-- Always emphasize that you're providing initial guidance, not diagnosis
-- For serious symptoms, strongly recommend seeking medical care
-- Provide practical advice using locally available resources
-- Be empathetic and supportive
-- If unsure, err on the side of caution and recommend professional care
+Guidelines:
+- You can understand and respond in both Amharic and English
+- Be helpful, friendly, and encouraging
+- Provide clear, accurate information
+- When unsure, admit it rather than guessing
+- Respect Ethiopian cultural context and values
 
-Remember: You're a first-contact tool, not a replacement for medical professionals.`;
+You are running completely offline on the user's device - no internet connection needed!`;
 
         window.loadModel = async function() {
             const loadBtn = document.getElementById('loadBtn');

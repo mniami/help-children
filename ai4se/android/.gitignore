@@ -1,0 +1,57 @@
+# Gradle files
+.gradle/
+build/
+local.properties
+*.iml
+.gradle
+/local.properties
+
+# Android Studio
+.idea/
+*.iml
+.DS_Store
+*.swp
+*.swo
+*~
+.navigation/
+captures/
+output.json
+
+# NDK
+obj/
+.externalNativeBuild
+.cxx/
+
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Model files (too large for git)
+*.onnx
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Large assets
+app/src/main/assets/models/
+
+# OS files
+.DS_Store
+Thumbs.db

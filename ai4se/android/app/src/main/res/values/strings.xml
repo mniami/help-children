@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Amharic Assistant</string>
+    <string name="app_name_amharic">አማርኛ ረዳት</string>
+    
+    <!-- Main Screen -->
+    <string name="welcome_message">ሰላም! Welcome!</string>
+    <string name="subtitle">Your offline AI assistant</string>
+    <string name="type_message">Type your message…</string>
+    <string name="type_message_amharic">መልእክትዎን ይተይቡ…</string>
+    
+    <!-- Buttons -->
+    <string name="send">Send</string>
+    <string name="speak">Speak</string>
+    <string name="listening">Listening…</string>
+    <string name="processing">Processing…</string>
+    <string name="clear_chat">Clear Chat</string>
+    
+    <!-- Model Status -->
+    <string name="model_loading">Loading AI model…</string>
+    <string name="model_ready">✓ Ready (Offline)</string>
+    <string name="model_error">Model Error</string>
+    <string name="download_model">Download AI Model</string>
+    <string name="model_size">Size: ~800 MB</string>
+    
+    <!-- Features -->
+    <string name="feature_conversation">💬 Conversation</string>
+    <string name="feature_translation">🔄 Translation</string>
+    <string name="feature_education">📚 Education</string>
+    <string name="feature_knowledge">🌍 Knowledge</string>
+    
+    <!-- Example prompts -->
+    <string name="example_greeting">ሰላም! እንዴት ነህ?</string>
+    <string name="example_translation">Translate "Good morning" to Amharic</string>
+    <string name="example_capital">What is the capital of Ethiopia?</string>
+    <string name="example_culture">Tell me about Ethiopian coffee</string>
+    
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="voice_input">Voice Input</string>
+    <string name="voice_output">Voice Output</string>
+    <string name="model_info">Model Information</string>
+    
+    <!-- Permissions -->
+    <string name="permission_microphone_title">Microphone Access</string>
+    <string name="permission_microphone_message">We need microphone access for voice input. Your voice is processed locally on your device.</string>
+    <string name="permission_storage_title">Storage Access</string>
+    <string name="permission_storage_message">We need storage access to save the AI model for offline use.</string>
+    
+    <!-- Errors -->
+    <string name="error_no_internet">No internet connection for model download</string>
+    <string name="error_model_load">Failed to load model</string>
+    <string name="error_speech_recognition">Speech recognition not available</string>
+    <string name="error_tts">Text-to-speech not available</string>
+    
+    <!-- Info -->
+    <string name="privacy_notice">🔒 Everything runs on your device. No data is sent to external servers.</string>
+    <string name="offline_mode">✈️ Works completely offline</string>
+</resources>

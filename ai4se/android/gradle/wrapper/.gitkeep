@@ -1,0 +1,2 @@
+# Add Gradle Wrapper JAR (required for building)
+!gradle/wrapper/gradle-wrapper.jar
